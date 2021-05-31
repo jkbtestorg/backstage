@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog
 
+## 0.6.1
+
+### Patch Changes
+
+- 2a942cc9e: invert logic for when to show type column
+- Updated dependencies [8e919a6f8]
+  - @backstage/plugin-catalog-react@0.2.1
+
 ## 0.6.0
 
 ### Minor Changes
