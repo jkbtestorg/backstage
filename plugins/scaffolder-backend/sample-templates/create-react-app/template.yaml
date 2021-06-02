@@ -13,7 +13,6 @@ spec:
   templater: cra
   type: website
   path: '.'
-  spec:
   steps:
     - id: publish # a unique id for the step, can be anything you like
       name: Publish # a user friendly name for the step, this is what is shown in the frontend
