@@ -19,8 +19,8 @@ spec:
       action: publish:github # the action ID that has been registered with the scaffolder-backend
       input: # parameters that are passed as input to the action handler function
         allowedHosts: ['github.com']
-        description: 'This is {{ parameters.name }}' # handlebars templating is supported with the values from the parameters section in the same file.
-        repoUrl: '{{ parameters.repoUrl }}'
+        description: 'This is ' # handlebars templating is supported with the values from the parameters section in the same file.
+        repoUrl: 'https://google.com'
   schema:
     required: 
       - component_id
