@@ -13,14 +13,73 @@ spec:
   templater: cra
   type: website
   path: '.'
+  parameters:
+    - title: Add some input
+      required:
+        - component_id
+        - description
+      properties:
+        component_id:
+          title: Name
+          type: string
+          description: Unique name of the component
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this website is for.
+    - title: Some more additional info that was previously provided automatically
+      required:
+        - owner
+        - repoUrl
+      properties:
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+            - title: Choose a location
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
   steps:
-    - id: publish # a unique id for the step, can be anything you like
-      name: Publish # a user friendly name for the step, this is what is shown in the frontend
-      action: publish:github # the action ID that has been registered with the scaffolder-backend
-      input: # parameters that are passed as input to the action handler function
-        allowedHosts: ['github.com']
-        description: 'This is ' # handlebars templating is supported with the values from the parameters section in the same file.
-        repoUrl: 'https://google.com'
+  # this action will go use cookiecutter to template some files into the working directory
+  - id: template # an ID for the templating step
+    name: Create skeleton # A user friendly name for the action
+    action: fetch:cookiecutter
+    input:
+      url: ./skeleton # this is the directory for your skeleton files.
+      # If it's located next to the `template.yaml` then you can use a relative path,
+      # otherwise you can use absolute URLs that point at the VCS: https://github.com/backstage/backstage/tree/master/some_folder_somewhere
+      values:
+        # for each value that you need to pass to cookiecutter, they should be listed here and set in this values object.
+        # You can use the handlebars templating syntax to pull them from the input parameters listed in the same file
+        name: '{{ parameters.name }}'
+        owner: '{{ parameters.owner }}'
+        destination: '{{ parseRepoUrl parameters.repoUrl }}'
+
+      # this action is for publishing the working directory to the VCS
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+     allowedHosts: ['github.com']
+     description: 'This is {{ parameters.name }}'
+     repoUrl: '{{ parameters.repoUrl }}'
+
+      # this action will then register the created component in Backstage
+  - id: register
+    name: Register
+    action: catalog:register
+    input:
+     repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+     catalogInfoPath: '/catalog-info.yaml'
   schema:
     required: 
       - component_id
